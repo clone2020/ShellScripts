@@ -28,9 +28,9 @@ then
                                 echo $snap
                                 echo "This is a dry-run"
                         else
-                                echo "$ami and $snap are deregistered/deleted"
                                 aws ec2 deregister-image --image-id $ami
                                 aws ec2 delete-snapshot --snapshot-id $snap
+                                echo "$ami and $snap are deregistered/deleted"
                         fi
                 fi
         done

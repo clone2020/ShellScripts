@@ -1,7 +1,7 @@
 # ShellScripts
 Shell scripts for Cloud and Linux issues.
 
-## To Deregister AMI and Delete Snapshots of AMI's for particular Application, please use the below script. :)
+## To Deregister AMI and Delete Snapshots of AMI's for particular Application, please use the below script.
 
 https://github.com/clone2020/ShellScripts/blob/main/aws_ami_snap_deregister_delete.bash
 

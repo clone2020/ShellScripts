@@ -11,7 +11,7 @@ echo -n "dryrun:"
 read dryrun
 
 
-aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query 'Images[?CreationDate<=\`$date\`][ImageId]' --output test > ami.txt
+aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`][ImageId]" --output test > ami.txt
 
 if [ -s ami.txt ]
 then

@@ -1,8 +1,17 @@
 #!/usr/bin/bash
 
-declare app="sonarqube"
+echo "Enter the below values"
+echo -n "app:"
+read app
+echo -n "region:"
+read region
+echo -n "date:"
+read date
+echo -n "dryrun:"
+read dryrun
 
-aws ec2 describe-images --region=us-east-1 --filters "Name=tag:Name,Values=${app}*" --query 'Images[?CreationDate<=`2023-03-30`][ImageId]' --output test > ami.txt
+
+aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query 'Images[?CreationDate<=\`$date\`][ImageId]' --output test > ami.txt
 
 if [ -s ami.txt ]
 then
@@ -13,10 +22,16 @@ then
 
                 if [ ! -z "$snap" ]
                 then
-                       echo $ami
-                       echo $snap
-                       aws ec2 deregister-image --image-id $ami
-                       aws ec2 delete-snapshot --snapshot-id $snap
+                        if [ $dryrun == 'true' ]
+                        then
+                                echo $ami
+                                echo $snap
+                                echo "This is a dry-run"
+                        else
+                                echo "$ami and $snap are deregistered/deleted"
+                                aws ec2 deregister-image --image-id $ami
+                                aws ec2 delete-snapshot --snapshot-id $snap
+                        fi
                 fi
         done
 fi

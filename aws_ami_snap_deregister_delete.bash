@@ -10,28 +10,37 @@ read date
 echo -n "dryrun:"
 read dryrun
 
+declare amis="$(aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`][ImageId]" --output text)"
+declare ami_last="$(echo "${amis[*]}" | tail -n 1)"
 
-aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`][ImageId]" --output test > ami.txt
-
-if [ -s ami.txt ]
+if[ ! -z "$amis" ]
 then
-        for ami in `cat ami.txt`
-        do
+       if [ -s ami_snap.txt ]
+       then
+               rm -rf ami_snap.txt
+       fi
 
-                declare snap="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[BlockDeviceMappings[*].Ebs.SnapshotId]' --output text)"
+       for ami in ${amis[@]}
+       do
 
-                if [ ! -z "$snap" ]
-                then
-                        if [ $dryrun == 'true' ]
-                        then
-                                echo $ami
-                                echo $snap
-                                echo "This is a dry-run"
-                        else
-                                aws ec2 deregister-image --image-id $ami
-                                aws ec2 delete-snapshot --snapshot-id $snap
-                                echo "$ami and $snap are deregistered/deleted"
-                        fi
+               declare snap="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[BlockDeviceMappings[*].Ebs.SnapshotId]' --output text)"
+               declare createdate="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[CreationDate]' --output text)"
+               echo "$ami $createdate" >> ami_snap.txt
+
+               if [ ! -z "$snap" ]
+               then
+                       if [ $dryrun == 'true' ]
+                       then
+                               if [ $ami == "${ami_last}" ]
+                               then
+                                       sort -k 2.4 -k 2 ami_snap.txt
+                                       echo "This is a dry-run"
+                               fi
+                       else
+                               aws ec2 deregister-image --image-id $ami
+                               aws ec2 delete-snapshot --snapshot-id $snap
+                               echo "$ami and $snap are deregistered/deleted"
+                       fi
                 fi
         done
 fi

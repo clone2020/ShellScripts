@@ -27,7 +27,7 @@ then
                        then
                                if [ $ami == "${ami_last}" ]
                                then
-                                       aws ec2 describe-images --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`] | sort_by(@,&CreationDate)[].{id.ImageId,date:CreationDate}" --output text
+                                       aws ec2 describe-images --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`] | sort_by(@,&CreationDate)[].{id:ImageId,date:CreationDate}" --output text
                                        echo "This is a dry-run"
                                fi
                        else

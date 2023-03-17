@@ -10,22 +10,16 @@ read date
 echo -n "dryrun:"
 read dryrun
 
-declare amis="$(aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`][ImageId]" --output text)"
+declare amis="$(aws ec2 describe-images --region=${region} --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`] | sort_by(@,&CreationDate)[].{id:ImageId}" --output text
 declare ami_last="$(echo "${amis[*]}" | tail -n 1)"
 
 if[ ! -z "$amis" ]
 then
-       if [ -s ami_snap.txt ]
-       then
-               rm -rf ami_snap.txt
-       fi
 
        for ami in ${amis[@]}
        do
 
                declare snap="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[BlockDeviceMappings[*].Ebs.SnapshotId]' --output text)"
-               declare createdate="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[CreationDate]' --output text)"
-               echo "$ami $createdate" >> ami_snap.txt
 
                if [ ! -z "$snap" ]
                then
@@ -33,7 +27,7 @@ then
                        then
                                if [ $ami == "${ami_last}" ]
                                then
-                                       sort -k 2.4 -k 2 ami_snap.txt
+                                       aws ec2 describe-images --filters "Name=tag:Name,Values=${app}*" --query "Images[?CreationDate<=\`$date\`] | sort_by(@,&CreationDate)[].{id.ImageId,date:CreationDate}" --output text
                                        echo "This is a dry-run"
                                fi
                        else

@@ -17,8 +17,8 @@ if[ ! -z "$amis" ]
 then
        for ami in ${amis[@]}
        do
-               declare snap="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[BlockDeviceMappings[*].Ebs.SnapshotId]' --output text)"
-               declare createdate="$(aws ec2 describe-images --image-id $ami --query 'Images[*].[CreationDate]' --output text)"
+               declare snap="$(aws ec2 describe-images --region=${region} --image-id $ami --query 'Images[*].[BlockDeviceMappings[*].Ebs.SnapshotId]' --output text)"
+               declare createdate="$(aws ec2 describe-images --region=${region} --image-id $ami --query 'Images[*].[CreationDate]' --output text)"
 
                if [ ! -z "$snap" ]
                then
@@ -26,8 +26,8 @@ then
                        then
                                echo "Dry-run for AMI:$ami $createdate and Snapshot:$snap - no action taken"
                        else
-                               aws ec2 deregister-image --image-id $ami
-                               aws ec2 delete-snapshot --snapshot-id $snap
+                               aws ec2 --region=${region} deregister-image --image-id $ami
+                               aws ec2 --region=${region} delete-snapshot --snapshot-id $snap
                                echo "$ami and $snap are deregistered/deleted"
                        fi
                 fi

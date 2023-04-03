@@ -19,3 +19,6 @@ dryrun:true
 ```
 
 Change the values as required.
+
+## To copy secrets in Hashicorp vault from one project to other use the below script.
+

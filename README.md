@@ -22,3 +22,8 @@ Change the values as required.
 
 ## To copy secrets in Hashicorp vault from one project to other use the below script.
 
+https://github.com/clone2020/ShellScripts/blob/main/vault_cp.bash
+
+For using the script, please the empty porject in vault and then provide the required values similar to as shown below.
+
+$./vault_cp.bash <original_project>/ <destination_project>/

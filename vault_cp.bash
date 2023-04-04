@@ -9,11 +9,9 @@ fi
 
 declare origin=$1
 declare dest=$2
-declare list=()
-declare idx=0
-declare token=0
-declare trail_path=()
-declare -A stair=()
+declare list
+declare trail_path
+declare stair
 
 function traverse {
     local -r path="$1"
@@ -33,8 +31,7 @@ function traverse {
         if [[ "$secret" == */ ]]; then
             traverse "$path$secret"
         else
-            list[idx]=$path$secret
-            idx=$((idx+1))
+            echo "$path$secret"
         fi
     done
 }
@@ -47,20 +44,15 @@ else
     vaults=$(vault secrets list | awk '$2 == "kv"' | awk '{print $1}')
 fi
 
-for vault in $vaults; do
-        traverse $vault
-done
+list=$(traverse $vaults)
 
-for index in ${!list[@]}; do
-        echo "${index}: ${list[$index]}"
-done
-
-for trail in ${list[@]}; do
-        stair[$token]="$(vault kv get --format json $trail | jq -r '.data.data')"
-        trail_path[$token]="$(echo $trail | sed -e "s|$origin|$dest|g")"
-        echo -n ${stair[$token]} | vault kv put ${trail_path[$token]} -
-        echo "copied secrets to ${trail_path[$token]}"
-        token=$((token+1))
+for trail in ${list}; do
+#        keys[$token]="$(vault kv get --format json $trail | jq -r '.data.data | to_entries[].key')"
+#        values[$token]="$(vault kv get --format json $trail | jq -r '.data.data | to_entries | [] |.value')"
+        stair="$(vault kv get --format json $trail | jq -r '.data.data')"
+        trail_path="$(echo $trail | sed -e "s|$origin|$dest|g")"
+        echo -n ${stair} | vault kv put ${trail_path} -
+        echo "copied secrets to ${trail_path}"
 done
 
 echo ;

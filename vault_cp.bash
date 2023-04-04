@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -x
+#set -x
 
 # ensure we were given two command line arguments
 if [[ $# -ne 2 ]]; then
@@ -13,7 +13,7 @@ declare list=()
 declare idx=0
 declare token=0
 declare trail_path=()
-declare -a stair=()
+declare -A stair=()
 
 function traverse {
     local -r path="$1"
@@ -56,16 +56,13 @@ for index in ${!list[@]}; do
 done
 
 for trail in ${list[@]}; do
-        echo "$trail"
         stair[$token]="$(vault kv get --format json $trail | jq -r '.data.data')"
         trail_path[$token]="$(echo $trail | sed -e "s|$origin|$dest|g")"
+        echo -n ${stair[$token]} | vault kv put ${trail_path[$token]} -
+        echo "copied secrets to ${trail_path[$token]}"
         token=$((token+1))
-        echo "$token"
 done
 
-if [[ "${#stair[@]}" == "${#trail_path[@]}" ]]; then
-        for ((i=0; i < "${#trail_path[@]}" ; ++i)); do
-                echo -n ${stair[$i]} | vault kv put ${trail_path[$i]} -
-                echo "copied secrets to ${trail_path[$i]}"
-        done
-fi
+echo ;
+echo "Done";
+echo ;

@@ -24,7 +24,7 @@ Change the values as required.
 
 https://github.com/clone2020/ShellScripts/blob/main/vault_cp.bash
 
-For using the script, please the empty porject in vault and then provide the required values similar to as shown below.
+For using the script, please create the empty porject in vault and then provide the required values similar to as shown below.
 
 $vault login
 

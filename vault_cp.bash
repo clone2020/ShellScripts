@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 #set -x
 
-# ensure we were given two command line arguments
+# ensure we were given two command line arguments.
 if [[ $# -ne 2 ]]; then
         echo 'usage: vault_cp SOURCE DEST' >&2
         exit 1
@@ -36,7 +36,7 @@ function traverse {
     done
 }
 
-# Iterate on all kv engines or start from the path provided by the user
+# Iterate on all kv engines or start from the path provided by the user.
 if [[ "$1" ]]; then
     # Make sure the path always end with '/'
     vaults=("${1%"/"}/")
@@ -46,6 +46,7 @@ fi
 
 list=$(traverse $vaults)
 
+# To get and put the secrets from origin to destination project.
 for trail in ${list}; do
         stair="$(vault kv get --format json $trail | jq -r '.data.data')"
         trail_path="$(echo $trail | sed -e "s|$origin|$dest|g")"

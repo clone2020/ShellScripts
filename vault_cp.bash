@@ -16,7 +16,7 @@ declare stair
 function traverse {
     local -r path="$1"
 
-    result=$(vault kv list --format=yaml $path | awk '{print $2}' 2>&1)
+    result=$(vault kv list --format=json $path 2>&1)
 
     status=$?
     if [ ! $status -eq 0 ];
@@ -27,7 +27,7 @@ function traverse {
         >&2 echo "$result"
     fi
 
-    for secret in ${result[@]}; do
+    for secret in $(echo "$result" | jq -r '.[]'); do
         if [[ "$secret" == */ ]]; then
             traverse "$path$secret"
         else
@@ -41,14 +41,12 @@ if [[ "$1" ]]; then
     # Make sure the path always end with '/'
     vaults=("${1%"/"}/")
 else
-    vaults=$(vault secrets list | awk '$2 == "kv"' | awk '{print $1}')
+    vaults=$(vault secrets list --format=json | jq -r 'to_entries[] | select(.value.type =="kv") | .key')
 fi
 
 list=$(traverse $vaults)
 
 for trail in ${list}; do
-#        keys[$token]="$(vault kv get --format json $trail | jq -r '.data.data | to_entries[].key')"
-#        values[$token]="$(vault kv get --format json $trail | jq -r '.data.data | to_entries | [] |.value')"
         stair="$(vault kv get --format json $trail | jq -r '.data.data')"
         trail_path="$(echo $trail | sed -e "s|$origin|$dest|g")"
         echo -n ${stair} | vault kv put ${trail_path} -

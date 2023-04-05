@@ -7,6 +7,9 @@ if [[ $# -ne 2 ]]; then
         exit 1
 fi
 
+echo -n "dryrun:"
+read dryrun
+
 declare origin=$1
 declare dest=$2
 declare list
@@ -50,8 +53,14 @@ list=$(traverse $vaults)
 for trail in ${list}; do
         stair="$(vault kv get --format json $trail | jq -r '.data.data')"
         trail_path="$(echo $trail | sed -e "s|$origin|$dest|g")"
-        echo -n ${stair} | vault kv put ${trail_path} -
-        echo "copied secrets to ${trail_path}"
+
+        if [ $dryrun == 'true' ]
+        then
+                echo "Dry-run to copy secrets to ${trail_path}"
+        else
+                echo -n ${stair} | vault kv put ${trail_path} -
+                echo "copied secrets to ${trail_path}"
+        fi
 done
 
 echo ;

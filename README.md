@@ -29,3 +29,5 @@ For using the script, please create the empty project in vault and then provide 
 $vault login
 
 $./vault_cp.bash <original_project>/ <destination_project>/
+
+dryrun:true

@@ -1,0 +1,70 @@
+IP - Internet protocol Address
+
+Total
+======
+0.0.0.0 - 255.255.255.255 (Ipv4)
+
+Reserved Private IP's
+=====================
+192.168.0.0 – 192.168.255.255 (65,536 IP addresses)
+172.16.0.0 – 172.31.255.255 (1,048,576 IP addresses)
+10.0.0.0 – 10.255.255.255 (16,777,216 IP addresses)
+
+Rest all are PUBLIC
+
+16.5.6.3
+3.4.5.6
+
+VPC - Virtual Private CLoud
+=========================
+An IP addresses is considered private if the second octet is between 16 and 31.
+https://geeksforgeeks.org/subnet-cheat-sheet/
+
+10.17.0.0 - 32 bits (Every decimal is a octet - 8 bits)
+
+8 bit. 8bit. 8bit. 8bit
+
+00001010.00010001.00000000.00000000 
+
+CIDR - 10.17.0.0/x
+
+x= ?
+
+300 ips
+
+2^0 = 1
+2^1 = 2
+2^2 = 4
+2^3 = 8 - N
+2^4 = 16 - N
+--
+--
+2^7 = 128 - N
+2^8 = 256 - N
+2^9 = 512 - Y
+
+x= 32-9= 23
+
+CIDR - 10.17.0.0/23
+
+Subnet CIDR Calc
+==================
+Subnet = 4
+
+2^0 = 1
+2^1 = 2
+2^2 = 4
+
+10.17.0.0/23 - (23+2)
+
+10.17.0.0/23 - 25
+
+
+http://54.159.136.29:80/
+ssh: 22
+
+Call Support - 
+
+https://jodies.de/ipcalc?host=10.11.0.0&mask1=24&mask2=26
+
+
